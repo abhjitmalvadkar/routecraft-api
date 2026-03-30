@@ -1,98 +1,300 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# RouteCraft API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+**Backend REST API for RouteCraft — AI-powered travel quote creation platform for DMCs.**
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+| Technology | Purpose |
+|---|---|
+| NestJS | Backend framework (TypeScript, modular, DI) |
+| TypeORM | ORM with PostgreSQL |
+| PostgreSQL | Database |
+| Passport.js + JWT | Authentication (24h token expiry) |
+| bcryptjs | Password hashing (10 salt rounds) |
+| class-validator | Request validation (DTOs with decorators) |
+| OpenAI API (GPT-4o-mini) | AI itinerary generation |
+| Puppeteer | PDF generation (HTML template to PDF) |
+| Nodemailer + Gmail SMTP | Email sending |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Getting Started
 
-## Project setup
+### Prerequisites
 
-```bash
-$ npm install
-```
+- Node.js 18+
+- PostgreSQL 14+
+- npm
 
-## Compile and run the project
+### Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/abhjitmalvadkar/routecraft-api.git
+cd routecraft-api
+npm install
 ```
 
-## Run tests
+### Database Setup
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Create the database
+psql -U postgres -c "CREATE DATABASE routecraft;"
 ```
 
-## Deployment
+### Environment Setup
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create `.env`:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_DATABASE=routecraft
+
+# JWT
+JWT_SECRET=routecraft-jwt-secret-change-in-production
+JWT_EXPIRES_IN=24h
+
+# Server
+PORT=4000
+FRONTEND_URL=http://localhost:3000
+NODE_ENV=development
+
+# OpenAI
+OPENAI_API_KEY=sk-your-openai-api-key-here
+OPENAI_MODEL=gpt-4o-mini
+
+# Email (Gmail SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+SMTP_FROM=RouteCraft <your-email@gmail.com>
+```
+
+### Run
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Development (auto-creates tables via TypeORM synchronize)
+npm run start:dev
+
+# Seed the database
+npx ts-node src/seeds/seed.ts
+
+# Production build
+npm run build
+npm run start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+The API runs on **http://localhost:4000** with prefix `/api/v1/`.
 
-## Resources
+### Verify
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+curl http://localhost:4000/api/v1/health
+# Returns: { "success": true, "data": { "status": "ok" } }
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Demo Credentials
 
-## Support
+After running the seed script:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| Role | Email | Password |
+|---|---|---|
+| Super Admin | admin@routecraft.com | Admin@1234 |
+| Org Admin | admin@desertdreams.ae | Demo@1234 |
+| Agent | priya@desertdreams.ae | Demo@1234 |
 
-## Stay in touch
+## API Endpoints
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Auth (4 endpoints)
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/auth/login` | Login — returns JWT token |
+| POST | `/auth/change-password` | Change password (requires auth) |
+| GET | `/auth/profile` | Get current user with org relation |
+| PUT | `/auth/profile` | Update name, phone |
+
+### Admin — Super Admin (15 endpoints)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/admin/dashboard` | Dashboard stats |
+| GET | `/admin/orgs` | List orgs (with _count, orgAdmin) |
+| POST | `/admin/orgs` | Create org (can exist without admin) |
+| GET | `/admin/orgs/:id` | Get org detail |
+| PUT | `/admin/orgs/:id` | Update org |
+| PATCH | `/admin/orgs/:id/status` | Suspend/reactivate org |
+| DELETE | `/admin/orgs/:id` | Soft delete org + users |
+| POST | `/admin/orgs/:orgId/admin` | Create Org Admin |
+| POST | `/admin/orgs/:orgId/invite` | Invite user (role: ORG_ADMIN or AGENT) |
+| PATCH | `/admin/orgs/:orgId/users/:userId/status` | Suspend/reactivate user |
+| DELETE | `/admin/orgs/:orgId/users/:userId` | Soft delete user |
+| POST | `/admin/orgs/:orgId/remind` | Resend invite email |
+| GET | `/admin/orgs/:orgId/users` | List users in org |
+| GET | `/admin/orgs/:orgId/users/:userId` | User dashboard |
+| GET | `/admin/orgs/:orgId/quotes/:quoteId` | Quote detail |
+
+### Org — Org Admin (18 endpoints)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/org/dashboard` | Dashboard with approval queue |
+| GET | `/org/settings` | Get org settings |
+| PUT | `/org/settings` | Update settings |
+| GET | `/org/destinations` | List destinations (with service count) |
+| POST | `/org/destinations` | Create destination |
+| PUT | `/org/destinations/:id` | Update destination |
+| DELETE | `/org/destinations/:id` | Soft delete destination |
+| GET | `/org/services` | List services (with destination) |
+| POST | `/org/services` | Create service |
+| GET | `/org/services/:id` | Get service detail |
+| PUT | `/org/services/:id` | Update service |
+| DELETE | `/org/services/:id` | Soft delete service |
+| GET | `/org/agents` | List agents |
+| POST | `/org/agents/invite` | Invite agent |
+| GET | `/org/agents/:id` | Agent detail |
+| GET | `/org/agents/:id/markup` | Get markup config |
+| PUT | `/org/agents/:id/markup` | Update markup config |
+| DELETE | `/org/agents/:id` | Soft delete agent |
+
+### Org Quotes (7 endpoints)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/org/quotes` | List all quotes in org |
+| GET | `/org/quotes/:id` | Get quote detail |
+| POST | `/org/quotes` | Create quote |
+| POST | `/org/quotes/:id/pricing` | Set pricing |
+| POST | `/org/quotes/:id/send` | Send quote email |
+| GET | `/org/quotes/:id/download` | Download PDF |
+| PATCH | `/org/quotes/:id/approve` | Approve quote |
+| PATCH | `/org/quotes/:id/rework` | Rework with comment |
+| GET | `/org/approvals` | List pending approvals |
+
+### Agent (13 endpoints)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/agent/dashboard` | Agent dashboard |
+| GET | `/agent/markup` | Own markup options |
+| GET | `/agent/catalog` | Browse service catalog |
+| GET | `/agent/catalog/alternatives/:serviceId` | Get alternatives |
+| GET | `/agent/catalog/:serviceId` | Get service detail |
+| POST | `/agent/quotes` | Create quote |
+| GET | `/agent/quotes` | List own quotes |
+| GET | `/agent/quotes/:id` | Get quote detail |
+| PUT | `/agent/quotes/:id/itinerary` | Update itinerary |
+| POST | `/agent/quotes/:id/pricing` | Set pricing |
+| POST | `/agent/quotes/:id/send` | Send quote |
+| GET | `/agent/quotes/:id/download` | Download PDF |
+| POST | `/agent/quotes/:id/resend` | Resend to email |
+| DELETE | `/agent/quotes/:id` | Delete quote |
+
+### AI (2 endpoints)
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/ai/start` | Start AI conversation |
+| POST | `/ai/continue` | Continue conversation |
+
+### Upload (1 endpoint)
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/upload/service-photo/:serviceId` | Upload service photo |
+
+## Response Format
+
+All responses use the envelope format:
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "error": null,
+  "message": null
+}
+```
+
+Error responses:
+
+```json
+{
+  "success": false,
+  "data": null,
+  "error": { "code": "HTTP_401", "details": null },
+  "message": "Invalid credentials"
+}
+```
+
+Paginated responses:
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [...],
+    "total": 20,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 2
+  }
+}
+```
+
+## Project Structure
+
+```
+src/
+├── entities/          # TypeORM entity classes + enums
+├── seeds/             # Database seed script
+├── common/            # Guards, decorators, filters, interceptors, DTOs
+├── auth/              # Login, password, profile
+├── admin/             # Super Admin org/user management
+├── org/               # Org Admin dashboard, settings
+├── destinations/      # Destination CRUD
+├── services/          # Service CRUD
+├── agents/            # Agent management + agent's own routes
+├── ai/                # OpenAI integration
+├── quotes/            # Quote lifecycle
+├── pdf/               # Puppeteer PDF generation
+├── email/             # Nodemailer emails
+├── upload/            # File upload
+├── app.module.ts      # Root module
+├── main.ts            # Bootstrap
+└── data-source.ts     # TypeORM CLI config
+```
+
+## Seed Data
+
+The seed script creates:
+- **1 Super Admin** — admin@routecraft.com
+- **1 Organization** — Desert Dreams DMC (desert-dreams-dmc)
+- **1 Org Admin** — Ahmed Al Rashid (admin@desertdreams.ae)
+- **1 Agent** — Priya Sharma (priya@desertdreams.ae)
+- **1 Markup Config** — 5 options (5% flagged, 10% flagged, 15%, 20%, 25%)
+- **3 Destinations** — Dubai, Abu Dhabi, Sharjah
+- **20 Services** — 4 Hotels, 4 Transfers, 8 Activities, 4 Meals (with full metadata)
+
+## Security
+
+- JWT Bearer token on all protected routes
+- Role-based access: Super Admin (god mode), Org Admin, Agent
+- Multi-tenant isolation: every query filters by orgId
+- Soft delete: deletedAt column, never hard delete
+- Password: bcrypt 10 rounds, rules enforced (8+ chars, upper, lower, number, special)
+- Email immutability: cannot change once set
+- Upload: orgId verification prevents cross-tenant access
+
+## Frontend
+
+The frontend app (routecraft-web) consumes this API:
+- Repository: https://github.com/abhjitmalvadkar/routecraft-web
+- Runs on port 3000
+- Set `NEXT_PUBLIC_USE_MOCK=false` to connect to this backend
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Private — RouteCraft

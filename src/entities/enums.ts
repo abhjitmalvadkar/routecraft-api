@@ -1,0 +1,28 @@
+export enum Role {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ORG_ADMIN = 'ORG_ADMIN',
+  AGENT = 'AGENT',
+}
+
+export enum ServiceCategory {
+  HOTELS = 'HOTELS',
+  TRANSFERS = 'TRANSFERS',
+  ACTIVITIES = 'ACTIVITIES',
+  MEALS = 'MEALS',
+}
+
+export enum RateUnit {
+  PER_ROOM_NIGHT = 'PER_ROOM_NIGHT',
+  PER_VEHICLE = 'PER_VEHICLE',
+  PER_PERSON = 'PER_PERSON',
+}
+
+export enum QuoteStatus {
+  DRAFT = 'DRAFT',
+  READY_FOR_PRICING = 'READY_FOR_PRICING',
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
+  APPROVED = 'APPROVED',
+  REWORK = 'REWORK',
+  SENT = 'SENT',
+  DOWNLOADED = 'DOWNLOADED',
+}
